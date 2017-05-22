@@ -1,0 +1,94 @@
+﻿<div class='panel panel-primary'>
+    <div class='panel-heading'>
+        {{pageTitle}}
+    </div>
+    <div class='panel-body'>
+        <div class="ui-widget-header" style="padding:4px 10px;border-bottom: 0 none">
+            <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+            <input #gb type="text" pInputText size="50" placeholder="Processor Filter">
+        </div>
+        <div *ngIf='cpus && cpus.length'>
+            <p-dataTable [value]="cpus" [editable]="true" [(selection)]="selectedCpus" (onRowSelect)="testRowSelect($event)" dataKey="id" [rows]="5" [paginator]="true" [pageLinks]="3"  [globalFilter]="gb" [tableStyle]="{'table-layout':'auto'}">
+                <p-column field="productNameFull" header="Processor Name" [editable]="true"></p-column>
+                <p-column field="productSeries" header="Series" [editable]="true"></p-column>
+                <p-column field="productCodename" header="Codename"></p-column>
+                <p-column field="coreCount" header="Cores"></p-column>
+                <p-column field="threadCount" header="Threads"></p-column>
+                <p-column field="launchDate" header="Release Date">
+                    <template pTemplate="body" let-car="rowData">
+                        {{car.launchDate | date:'yyyy-MM-dd'}}
+                    </template>
+                </p-column>
+                <p-column styleClass="col-button">
+                    <template pTemplate="header">
+                    </template>
+                    <template let-car="rowData" pTemplate="body">
+                        <button type="button" pButton (click)="selectCpu(car)" icon="fa-plus" label="Add"></button>
+                    </template>
+                </p-column>
+            </p-dataTable>
+        </div>
+    </div>
+</div>
+<div *ngIf='procsForCalc && procsForCalc.length'>
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            Selected Processors
+        </div>
+    </div>
+    <div>
+        <p-dataTable [value]="procsForCalc" [editable]="true" (onEditComplete)=doSomething($event) dataKey="id" [rows]="5" [paginator]="true">
+            <p-column styleClass="col-button" [style]="{width: '90px', 'text-align': 'center'}">
+                <template pTemplate="header">
+                    <button type="button" class="ui-button-danger ui-button ui-widget ui-corner-all ui-button-icon-only" pButton icon="fa-close"></button>
+                </template>
+                <template let-cpu="rowData" pTemplate="body">
+                    <button type="button" class="ui-button-danger ui-button ui-widget ui-corner-all ui-button-icon-only" pButton (click)="removeCpu(cpu)" icon="fa-close"></button>
+                </template>
+            </p-column>
+            <p-column field="numProcs" header="Quantity" [editable]="true" [style]="{width: '90px', 'text-align': 'center'}">
+                <template let-col let-cpu="rowData" pTemplate="body">
+                    {{cpu[col.field] === undefined ? 0 : cpu[col.field] | number }}
+                </template>
+                <template let-col let-cpu="rowData" pTemplate="editor">
+                    <input type="number" pInputText (ngModelChange)="doSomething(cpu)" [(ngModel)]="cpu[col.field]" required="true" placeholder="1" />
+                </template>
+            </p-column>
+            <p-column field="productNameFull" header="Processor Name"></p-column>
+            <p-column field="tpse" header="Estimated TpsE / Proc"></p-column>
+            <p-column field="tpseCore" header="Estimated TpsE / Core"></p-column>
+            <p-column field="totalTpse" header="Total TpsE"></p-column>
+            <p-footer>
+                <span style="font-weight:bold;font-size:16px;text-align:right;color:red;">
+                    Grand Total: {{ tpseSum }}
+                </span>
+            </p-footer>
+        </p-dataTable>
+    </div>
+</div>    
+    <!--<div>
+        <p *ngIf="!cpus"><em>Loading...</em></p>
+        <div class='table-responsive'>
+            <table class='table'
+                   *ngIf='procsForCalc && procsForCalc.length'>
+                <thead>
+                    <tr>
+                        <th>Proc ID</th>
+                        <th>Quantity</th>
+                        <th>Prod Name Full</th>
+                        <th>TpsE</th>
+                        <th>Total TpsE</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor='let proc of procsForCalc'>
+                        <td>{{ proc.id }}</td>
+                        <td>{{ proc.numProcs }}</td>
+                        <td>{{ proc.productNameFull }}</td>
+                        <td>{{ proc.tpse }}</td>
+                        <td>{{ proc.totalTpse }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>-->
